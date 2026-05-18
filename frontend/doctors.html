@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCare — Find a Doctor</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="flash-wrap" id="flash-wrap"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-brand" href="index.html">🏥 MediCare Hospital</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link active" href="doctors.html">Doctors</a>
+    <a class="nav-link" href="login.html">Login</a>
+    <a class="nav-btn" href="register.html">Register</a>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<div style="max-width:900px;margin:0 auto;padding:32px 24px;">
+  <div class="page-header">
+    <h2>Find a doctor</h2>
+    <p>Browse and book appointments with our specialists</p>
+  </div>
+
+  <!-- Search & Filter -->
+  <div class="search-bar">
+    <select class="form-control" id="dept-filter" onchange="filterDoctors()" style="max-width:210px;">
+      <option value="">All departments</option>
+      <option>Cardiology</option>
+      <option>Orthopedic</option>
+      <option>Neurology</option>
+      <option>Eye Care</option>
+      <option>Dental</option>
+      <option>Pediatrics</option>
+      <option>Dermatology</option>
+      <option>General</option>
+    </select>
+    <input type="text" class="form-control" id="search" placeholder="🔍  Search by doctor name..." oninput="filterDoctors()"/>
+  </div>
+
+  <!-- Results count -->
+  <p id="result-count" style="font-size:13px;color:var(--gray-400);margin-bottom:14px;"></p>
+
+  <!-- Doctor cards -->
+  <div id="doctors-list"></div>
+</div>
+
+<footer class="footer">
+  <strong>MediCare Hospital</strong> &nbsp;·&nbsp; Final Year Project
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+const DOCTORS = [
+  { name:'Dr. Rajesh Sharma',   initials:'RS', spec:'Cardiologist',       dept:'Cardiology',   avail:'Mon–Fri, 10am–4pm',  fee:500,  status:'available', exp:'12 yrs' },
+  { name:'Dr. Anita Patel',     initials:'AP', spec:'Neurologist',         dept:'Neurology',    avail:'Tue–Sat, 9am–2pm',   fee:600,  status:'available', exp:'9 yrs'  },
+  { name:'Dr. Manish Kumar',    initials:'MK', spec:'Orthopedic Surgeon',  dept:'Orthopedic',   avail:'Mon, Wed, Fri',      fee:550,  status:'busy',      exp:'15 yrs' },
+  { name:'Dr. Sunita Rao',      initials:'SR', spec:'Dermatologist',       dept:'Dermatology',  avail:'Mon–Thu, 11am–5pm',  fee:400,  status:'available', exp:'7 yrs'  },
+  { name:'Dr. Vikram Singh',    initials:'VS', spec:'Eye Specialist',      dept:'Eye Care',     avail:'Tue–Sat, 10am–3pm',  fee:450,  status:'available', exp:'10 yrs' },
+  { name:'Dr. Meera Iyer',      initials:'MI', spec:'Dentist',             dept:'Dental',       avail:'Mon–Fri, 9am–6pm',   fee:350,  status:'available', exp:'8 yrs'  },
+  { name:'Dr. Arjun Nair',      initials:'AN', spec:'Pediatrician',        dept:'Pediatrics',   avail:'Mon–Sat, 8am–2pm',   fee:400,  status:'available', exp:'11 yrs' },
+  { name:'Dr. Prerna Gupta',    initials:'PG', spec:'General Physician',   dept:'General',      avail:'Daily, 8am–8pm',     fee:300,  status:'available', exp:'6 yrs'  },
+  { name:'Dr. Suresh Mehta',    initials:'SM', spec:'Cardiologist',        dept:'Cardiology',   avail:'Mon–Wed, 9am–1pm',   fee:600,  status:'available', exp:'18 yrs' },
+  { name:'Dr. Kavya Reddy',     initials:'KR', spec:'Neurologist',         dept:'Neurology',    avail:'Thu–Sat, 10am–4pm',  fee:550,  status:'busy',      exp:'5 yrs'  },
+];
+
+function renderDoctors(list) {
+  const el = document.getElementById('doctors-list');
+  document.getElementById('result-count').textContent = list.length + ' doctor(s) found';
+
+  if (list.length === 0) {
+    el.innerHTML = '<div class="card" style="text-align:center;padding:40px;color:var(--gray-400);">😕 No doctors found. Try a different filter.</div>';
+    return;
+  }
+
+  el.innerHTML = list.map(d => `
+    <div class="doctor-card">
+      <div class="avatar" style="width:50px;height:50px;font-size:15px;">${d.initials}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600;font-size:15px;margin-bottom:2px;">${d.name}</div>
+        <div style="font-size:12px;color:var(--gray-400);margin-bottom:4px;">
+          ${d.spec} &nbsp;·&nbsp; ${d.dept} &nbsp;·&nbsp; ${d.exp} experience
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="badge ${d.status === 'available' ? 'badge-green' : 'badge-amber'}">${d.status === 'available' ? '✅ Available' : '⏳ Busy'}</span>
+          <span style="font-size:11px;color:var(--gray-400);">🕐 ${d.avail}</span>
+          <span style="font-size:11px;color:var(--gray-400);">💰 ₹${d.fee} consultation</span>
+        </div>
+      </div>
+      <a href="book_appointment.html?doctor=${encodeURIComponent(d.name)}&dept=${encodeURIComponent(d.dept)}"
+         class="btn ${d.status === 'available' ? 'btn-primary' : 'btn-gray'} btn-sm"
+         ${d.status !== 'available' ? 'onclick="return false;"' : ''}>
+        ${d.status === 'available' ? '📅 Book' : 'Slot Full'}
+      </a>
+    </div>
+  `).join('');
+}
+
+function filterDoctors() {
+  const dept   = document.getElementById('dept-filter').value;
+  const search = document.getElementById('search').value.toLowerCase();
+  const filtered = DOCTORS.filter(d =>
+    (!dept   || d.dept === dept) &&
+    (!search || d.name.toLowerCase().includes(search) || d.spec.toLowerCase().includes(search))
+  );
+  renderDoctors(filtered);
+}
+
+// Check URL params for dept filter from home page
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const dept = params.get('dept');
+  if (dept) document.getElementById('dept-filter').value = dept;
+  filterDoctors();
+});
+</script>
+</body>
+</html>

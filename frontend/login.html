@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCare — Login</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="flash-wrap" id="flash-wrap"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-brand" href="index.html">🏥 MediCare Hospital</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="doctors.html">Doctors</a>
+    <a class="nav-link active" href="login.html">Login</a>
+    <a class="nav-btn" href="register.html">Register</a>
+  </div>
+</nav>
+
+<!-- LOGIN FORM -->
+<div class="auth-wrap">
+  <div class="auth-box">
+    <div class="card">
+      <div class="auth-icon">🔐</div>
+      <h2 class="auth-title">Welcome back</h2>
+      <p class="auth-sub">Login to your account</p>
+
+      <!-- Role Tabs -->
+      <div class="role-tabs">
+        <button class="role-tab active" onclick="setRole('patient', this)">🧑 Patient</button>
+        <button class="role-tab" onclick="setRole('doctor', this)">👨‍⚕️ Doctor</button>
+        <button class="role-tab" onclick="setRole('admin', this)">🛡️ Admin</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input type="email" id="email" class="form-control" placeholder="you@email.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="••••••••"/>
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Login →</button>
+
+      <div class="auth-switch">
+        Don't have an account? <a href="register.html">Register here</a>
+      </div>
+      <p style="text-align:center;font-size:11px;color:var(--gray-400);margin-top:10px;">Demo: any email & password works</p>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  let currentRole = 'patient';
+
+  function setRole(role, btn) {
+    currentRole = role;
+    document.querySelectorAll('.role-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function doLogin() {
+    const email = document.getElementById('email').value.trim();
+    const pass  = document.getElementById('password').value.trim();
+    if (!email || !pass) { flash('Please enter email and password', 'error'); return; }
+
+    if (currentRole === 'patient') {
+      window.location.href = 'patient_dashboard.html';
+    } else if (currentRole === 'doctor') {
+      window.location.href = 'doctor_dashboard.html';
+    } else {
+      window.location.href = 'admin_dashboard.html';
+    }
+  }
+</script>
+</body>
+</html>

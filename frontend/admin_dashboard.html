@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCare — Admin Panel</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="flash-wrap" id="flash-wrap"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar" style="background:var(--navy);">
+  <a class="navbar-brand" href="index.html">🛡️ Admin Panel — MediCare</a>
+  <div class="nav-links">
+    <a class="nav-link active" href="admin_dashboard.html">Dashboard</a>
+    <a class="nav-link" href="login.html">Logout</a>
+  </div>
+</nav>
+
+<div class="dash-layout">
+
+  <!-- SIDEBAR DARK -->
+  <aside class="sidebar sidebar-dark">
+    <div class="sidebar-user">
+      <div class="avatar" style="width:42px;height:42px;font-size:14px;background:rgba(255,255,255,0.1);color:#fff;">SA</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#fff;">Super Admin</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);">Administrator</div>
+      </div>
+    </div>
+    <div class="sidebar-title">Navigation</div>
+    <div class="sidebar-item active" onclick="showTab('overview', this)">📊 Dashboard</div>
+    <div class="sidebar-item" onclick="showTab('doctors', this)">👨‍⚕️ Manage doctors</div>
+    <div class="sidebar-item" onclick="showTab('appointments', this)">📅 All appointments</div>
+    <div class="sidebar-item" onclick="showTab('patients', this)">🧑 Patients</div>
+    <div class="sidebar-item" onclick="showTab('departments', this)">🏨 Departments</div>
+    <div class="sidebar-title">Account</div>
+    <div class="sidebar-item" onclick="window.location.href='login.html'">🚪 Logout</div>
+  </aside>
+
+  <div class="dash-content">
+
+    <!-- ── OVERVIEW ── -->
+    <div id="tab-overview">
+      <div class="page-header">
+        <h2>Admin dashboard 🛡️</h2>
+        <p>Hospital management overview</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👨‍⚕️</div>
+          <div class="stat-num">52</div>
+          <div class="stat-label">Total doctors</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🧑</div>
+          <div class="stat-num">1,240</div>
+          <div class="stat-label">Registered patients</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-num" style="color:var(--blue);">18</div>
+          <div class="stat-label">Today's appointments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-num" style="color:var(--green);">12</div>
+          <div class="stat-label">Completed today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏨</div>
+          <div class="stat-num">8</div>
+          <div class="stat-label">Departments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-num">₹86K</div>
+          <div class="stat-label">Revenue today</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <h3 style="font-size:15px;font-weight:600;">Recent appointments</h3>
+          <button class="btn btn-primary btn-sm" onclick="exportCSV()">📥 Export CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Department</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td>#001</td><td>Rahul Singh</td><td>Dr. Sharma</td><td>Cardiology</td><td>20 May '25</td><td><span class="badge badge-blue">Upcoming</span></td><td><button class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td></tr>
+              <tr><td>#002</td><td>Priya Gupta</td><td>Dr. Patel</td><td>Neurology</td><td>19 May '25</td><td><span class="badge badge-green">Completed</span></td><td>—</td></tr>
+              <tr><td>#003</td><td>Amit Verma</td><td>Dr. Kumar</td><td>Orthopedic</td><td>18 May '25</td><td><span class="badge badge-green">Completed</span></td><td>—</td></tr>
+              <tr><td>#004</td><td>Neha Joshi</td><td>Dr. Rao</td><td>Dermatology</td><td>17 May '25</td><td><span class="badge badge-red">Cancelled</span></td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MANAGE DOCTORS ── -->
+    <div id="tab-doctors" style="display:none;">
+      <div class="page-header">
+        <h2>Manage doctors</h2>
+        <p>Add, edit or remove doctors</p>
+      </div>
+      <button class="btn btn-primary" style="margin-bottom:16px;" onclick="toggleAddForm()">+ Add new doctor</button>
+
+      <!-- Add doctor form -->
+      <div id="add-doctor-form" class="card" style="display:none;margin-bottom:16px;max-width:580px;">
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">Add new doctor</h3>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Full name</label><input class="form-control" id="new-name" placeholder="Dr. Full Name"/></div>
+          <div class="form-group"><label class="form-label">Specialization</label><input class="form-control" id="new-spec" placeholder="Cardiologist"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Department</label>
+            <select class="form-control" id="new-dept">
+              <option>Cardiology</option><option>Orthopedic</option><option>Neurology</option>
+              <option>Eye Care</option><option>Dental</option><option>Pediatrics</option>
+              <option>Dermatology</option><option>General</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="new-email" placeholder="doctor@hospital.com"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Phone</label><input class="form-control" placeholder="+91 98765 43210"/></div>
+          <div class="form-group"><label class="form-label">Experience</label><input class="form-control" placeholder="e.g. 5 years"/></div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary" onclick="addDoctor()">💾 Save doctor</button>
+          <button class="btn btn-outline" onclick="toggleAddForm()">Cancel</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="search-bar" style="margin-bottom:14px;">
+          <input type="text" class="form-control" placeholder="🔍 Search doctors..." oninput="searchTable(this, 'doctors-table')"/>
+          <select class="form-control" style="max-width:180px;" onchange="filterTableByDept(this,'doctors-table',4)">
+            <option value="">All departments</option>
+            <option>Cardiology</option><option>Neurology</option><option>Orthopedic</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Name</th><th>Specialization</th><th>Department</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="doctors-table">
+              <tr><td>1</td><td>Dr. Rajesh Sharma</td><td>Cardiologist</td><td>Cardiology</td><td>rajesh@medicare.com</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button></td></tr>
+              <tr><td>2</td><td>Dr. Anita Patel</td><td>Neurologist</td><td>Neurology</td><td>anita@medicare.com</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button></td></tr>
+              <tr><td>3</td><td>Dr. Manish Kumar</td><td>Orthopedic Surgeon</td><td>Orthopedic</td><td>manish@medicare.com</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button></td></tr>
+              <tr><td>4</td><td>Dr. Sunita Rao</td><td>Dermatologist</td><td>Dermatology</td><td>sunita@medicare.com</td><td><span class="badge badge-amber">On leave</span></td><td><button class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button></td></tr>
+              <tr><td>5</td><td>Dr. Vikram Singh</td><td>Eye Specialist</td><td>Eye Care</td><td>vikram@medicare.com</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ALL APPOINTMENTS ── -->
+    <div id="tab-appointments" style="display:none;">
+      <div class="page-header">
+        <h2>All appointments</h2>
+        <p>View and manage all bookings</p>
+      </div>
+      <div class="search-bar" style="margin-bottom:16px;">
+        <select class="form-control" style="max-width:160px;" onchange="filterByStatus(this)">
+          <option value="">All status</option>
+          <option>Upcoming</option><option>Completed</option><option>Cancelled</option>
+        </select>
+        <input type="date" class="form-control" style="max-width:180px;"/>
+        <select class="form-control" style="max-width:180px;">
+          <option value="">All departments</option>
+          <option>Cardiology</option><option>Neurology</option><option>Orthopedic</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="exportCSV()">📥 Export</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Dept</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="appts-admin-table">
+              <tr><td>#001</td><td>Rahul Singh</td><td>Dr. Sharma</td><td>20 May '25</td><td>Cardiology</td><td>In-person</td><td><span class="badge badge-blue">Upcoming</span></td><td><button class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td></tr>
+              <tr><td>#002</td><td>Priya Gupta</td><td>Dr. Patel</td><td>19 May '25</td><td>Neurology</td><td>Online</td><td><span class="badge badge-green">Completed</span></td><td>—</td></tr>
+              <tr><td>#003</td><td>Amit Verma</td><td>Dr. Kumar</td><td>18 May '25</td><td>Orthopedic</td><td>In-person</td><td><span class="badge badge-green">Completed</span></td><td>—</td></tr>
+              <tr><td>#004</td><td>Neha Joshi</td><td>Dr. Rao</td><td>17 May '25</td><td>Dermatology</td><td>In-person</td><td><span class="badge badge-red">Cancelled</span></td><td>—</td></tr>
+              <tr><td>#005</td><td>Vijay Kumar</td><td>Dr. Singh</td><td>16 May '25</td><td>Eye Care</td><td>In-person</td><td><span class="badge badge-green">Completed</span></td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PATIENTS ── -->
+    <div id="tab-patients" style="display:none;">
+      <div class="page-header">
+        <h2>Registered patients</h2>
+        <p>All patient records in the system</p>
+      </div>
+      <div class="search-bar" style="margin-bottom:16px;">
+        <input type="text" class="form-control" placeholder="🔍 Search patients..." oninput="searchTable(this, 'patients-table')"/>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Blood group</th><th>Joined</th><th>Total visits</th></tr></thead>
+            <tbody id="patients-table">
+              <tr><td>#PAT-001</td><td>Rahul Singh</td><td>rahul@email.com</td><td>+91 98765 43210</td><td>B+</td><td>Jan '25</td><td>8</td></tr>
+              <tr><td>#PAT-002</td><td>Priya Gupta</td><td>priya@email.com</td><td>+91 87654 32109</td><td>A+</td><td>Feb '25</td><td>3</td></tr>
+              <tr><td>#PAT-003</td><td>Amit Verma</td><td>amit@email.com</td><td>+91 76543 21098</td><td>O+</td><td>Mar '25</td><td>5</td></tr>
+              <tr><td>#PAT-004</td><td>Neha Joshi</td><td>neha@email.com</td><td>+91 65432 10987</td><td>AB+</td><td>Apr '25</td><td>2</td></tr>
+              <tr><td>#PAT-005</td><td>Vijay Kumar</td><td>vijay@email.com</td><td>+91 54321 09876</td><td>B−</td><td>Apr '25</td><td>6</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DEPARTMENTS ── -->
+    <div id="tab-departments" style="display:none;">
+      <div class="page-header">
+        <h2>Departments</h2>
+        <p>Hospital department overview</p>
+      </div>
+      <div class="dept-grid" style="max-width:800px;">
+        <div class="dept-card"><div class="dept-emoji">❤️</div><div class="dept-name">Cardiology</div><div class="dept-count">8 doctors</div></div>
+        <div class="dept-card"><div class="dept-emoji">🦴</div><div class="dept-name">Orthopedic</div><div class="dept-count">6 doctors</div></div>
+        <div class="dept-card"><div class="dept-emoji">🧠</div><div class="dept-name">Neurology</div><div class="dept-count">5 doctors</div></div>
+        <div class="dept-card"><div class="dept-emoji">👁️</div><div class="dept-name">Eye care</div><div class="dept-count">4 doctors</div></div>
+        <div class="dept-card"><div class="dept-emoji">🦷</div><div class="dept-name">Dental</div><div class="dept-count">7 doctors</div></div>
+        <div class="dept-card"><div class="dept-emoji">👶</div><div class="dept-name">Pediatrics</div><div class="dept-count">6 doctors</div></div>
+        <div class="dept-card"><div class="dept-emoji">🌿</div><div class="dept-name">Dermatology</div><div class="dept-count">4 doctors</div></div>
+        <div class="dept-card"><div class="dept-emoji">🩺</div><div class="dept-name">General</div><div class="dept-count">12 doctors</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+function showTab(id, el) {
+  ['overview','doctors','appointments','patients','departments'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === id ? 'block' : 'none';
+  });
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function toggleAddForm() {
+  const f = document.getElementById('add-doctor-form');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+let docCount = 5;
+function addDoctor() {
+  const name = document.getElementById('new-name').value.trim();
+  const spec = document.getElementById('new-spec').value.trim();
+  const dept = document.getElementById('new-dept').value;
+  const email = document.getElementById('new-email').value.trim();
+  if (!name || !spec || !email) { flash('Please fill all required fields', 'error'); return; }
+  docCount++;
+  const tbody = document.getElementById('doctors-table');
+  const row = document.createElement('tr');
+  row.innerHTML = `<td>${docCount}</td><td>${name}</td><td>${spec}</td><td>${dept}</td><td>${email}</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button></td>`;
+  tbody.appendChild(row);
+  document.getElementById('add-doctor-form').style.display = 'none';
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-spec').value = '';
+  document.getElementById('new-email').value = '';
+  flash(`${name} added successfully!`);
+}
+
+function removeRow(btn) {
+  if (!confirm('Are you sure you want to remove this record?')) return;
+  btn.closest('tr').remove();
+  flash('Record removed.');
+}
+
+function searchTable(input, tableId) {
+  const q = input.value.toLowerCase();
+  document.querySelectorAll(`#${tableId} tr`).forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function filterTableByDept(select, tableId, colIndex) {
+  const val = select.value;
+  document.querySelectorAll(`#${tableId} tr`).forEach(row => {
+    const cell = row.cells[colIndex];
+    row.style.display = (!val || (cell && cell.textContent === val)) ? '' : 'none';
+  });
+}
+
+function filterByStatus(select) {
+  const val = select.value;
+  document.querySelectorAll('#appts-admin-table tr').forEach(row => {
+    const badge = row.querySelector('.badge');
+    row.style.display = (!val || (badge && badge.textContent.trim() === val)) ? '' : 'none';
+  });
+}
+
+function exportCSV() {
+  flash('CSV export downloaded!');
+}
+</script>
+</body>
+</html>

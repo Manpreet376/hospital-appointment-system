@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}MediCare Hospital — Home{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Your Health,<br>Our Priority 💙</h1>
+  <p>Book appointments with top doctors — fast, easy, and online. Trusted by thousands of patients.</p>
+  <div class="hero-btns">
+    <a href="{{ url_for('register') }}" class="btn btn-white">📋 Book Appointment</a>
+    <a href="{{ url_for('doctors') }}" class="btn" style="border:1.5px solid rgba(255,255,255,0.5);color:#fff;background:rgba(255,255,255,0.12);">👨‍⚕️ View Doctors</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div style="max-width:1100px;margin:0 auto;padding:0 32px;">
+  <div class="stats-grid" style="margin-top:-28px;position:relative;z-index:2;">
+    <div class="stat-card">
+      <div class="stat-icon">👨‍⚕️</div>
+      <div class="stat-num">{{ doctors_count }}+</div>
+      <div class="stat-label">Expert doctors</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🧑‍🤝‍🧑</div>
+      <div class="stat-num">{{ patients_count }}+</div>
+      <div class="stat-label">Happy patients</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏨</div>
+      <div class="stat-num">{{ departments|length }}</div>
+      <div class="stat-label">Departments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-num">4.8</div>
+      <div class="stat-label">Patient rating</div>
+    </div>
+  </div>
+</div>
+
+<!-- DEPARTMENTS -->
+<div style="max-width:1100px;margin:0 auto;padding:36px 32px;">
+  <h2 class="section-title">Our Departments</h2>
+  <div class="dept-grid">
+    {% for dept in departments %}
+    <a href="{{ url_for('doctors', dept=dept.name) }}" class="dept-card">
+      <div class="dept-emoji">{{ dept.emoji }}</div>
+      <div class="dept-name">{{ dept.name }}</div>
+      <div class="dept-count">{{ dept.doctors|length }} doctors</div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- WHY US -->
+  <h2 class="section-title" style="margin-top:40px;">Why choose MediCare?</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:40px;">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:32px;margin-bottom:10px;">⚡</div>
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:6px;">Instant booking</h3>
+      <p style="font-size:13px;color:var(--gray-400);">Book in under 2 minutes, anytime from anywhere</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:32px;margin-bottom:10px;">🔒</div>
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:6px;">Secure & private</h3>
+      <p style="font-size:13px;color:var(--gray-400);">Your health data is encrypted and safe</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:32px;margin-bottom:10px;">🩺</div>
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:6px;">Top specialists</h3>
+      <p style="font-size:13px;color:var(--gray-400);">Board-certified doctors with years of experience</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:32px;margin-bottom:10px;">📱</div>
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:6px;">Easy to use</h3>
+      <p style="font-size:13px;color:var(--gray-400);">Simple interface that works on any device</p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

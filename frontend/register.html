@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCare — Register</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="flash-wrap" id="flash-wrap"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-brand" href="index.html">🏥 MediCare Hospital</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="doctors.html">Doctors</a>
+    <a class="nav-link" href="login.html">Login</a>
+    <a class="nav-btn active" href="register.html">Register</a>
+  </div>
+</nav>
+
+<!-- REGISTER FORM -->
+<div class="auth-wrap">
+  <div class="auth-box" style="max-width:500px;">
+    <div class="card">
+      <div class="auth-icon">📋</div>
+      <h2 class="auth-title">Create your account</h2>
+      <p class="auth-sub">Join MediCare — it's free</p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First name</label>
+          <input type="text" id="fname" class="form-control" placeholder="Rahul"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last name</label>
+          <input type="text" id="lname" class="form-control" placeholder="Singh"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input type="email" id="email" class="form-control" placeholder="you@email.com"/>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Phone number</label>
+          <input type="text" class="form-control" placeholder="+91 98765 43210"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date of birth</label>
+          <input type="date" class="form-control"/>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <select class="form-control">
+            <option value="">Select gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Blood group</label>
+          <select class="form-control">
+            <option value="">Select</option>
+            <option>A+</option><option>A−</option>
+            <option>B+</option><option>B−</option>
+            <option>AB+</option><option>AB−</option>
+            <option>O+</option><option>O−</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Address</label>
+        <input type="text" class="form-control" placeholder="Your full address"/>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="pass" class="form-control" placeholder="••••••••"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm password</label>
+          <input type="password" id="cpass" class="form-control" placeholder="••••••••"/>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="doRegister()">Create account →</button>
+
+      <div class="auth-switch">
+        Already have an account? <a href="login.html">Login here</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  function doRegister() {
+    const fname = document.getElementById('fname').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const pass  = document.getElementById('pass').value.trim();
+    const cpass = document.getElementById('cpass').value.trim();
+
+    if (!fname || !email || !pass) { flash('Please fill all required fields', 'error'); return; }
+    if (pass !== cpass) { flash('Passwords do not match', 'error'); return; }
+
+    flash('Account created successfully! Please login.');
+    setTimeout(() => window.location.href = 'login.html', 1500);
+  }
+</script>
+</body>
+</html>

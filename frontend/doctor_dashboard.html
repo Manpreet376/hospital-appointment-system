@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCare — Doctor Dashboard</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="flash-wrap" id="flash-wrap"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-brand" href="index.html">🏥 MediCare Hospital</a>
+  <div class="nav-links">
+    <a class="nav-link active" href="doctor_dashboard.html">My Schedule</a>
+    <a class="nav-link" href="login.html">Logout</a>
+  </div>
+</nav>
+
+<div class="dash-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-user">
+      <div class="avatar" style="width:42px;height:42px;font-size:14px;">RS</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;">Dr. Rajesh Sharma</div>
+        <div style="font-size:11px;color:var(--gray-400);">Cardiologist</div>
+      </div>
+    </div>
+    <div class="sidebar-title">Menu</div>
+    <div class="sidebar-item active" onclick="showTab('today', this)">📅 Today's schedule</div>
+    <div class="sidebar-item" onclick="showTab('history', this)">🗂️ Patient history</div>
+    <div class="sidebar-item" onclick="showTab('prescriptions', this)">💊 Write prescription</div>
+    <div class="sidebar-title">Account</div>
+    <div class="sidebar-item" onclick="window.location.href='login.html'">🚪 Logout</div>
+  </aside>
+
+  <div class="dash-content">
+
+    <!-- ── TODAY ── -->
+    <div id="tab-today">
+      <div class="page-header">
+        <h2>Today's schedule 📋</h2>
+        <p id="today-date"></p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-num" style="color:var(--blue);">5</div>
+          <div class="stat-label">Total today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-num" style="color:var(--amber);" id="waiting-count">2</div>
+          <div class="stat-label">Waiting</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-num" style="color:var(--green);" id="done-count">2</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🕐</div>
+          <div class="stat-num" style="color:var(--gray-400);">1</div>
+          <div class="stat-label">Upcoming</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:14px;">Patient queue</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Time</th><th>Patient name</th><th>Age</th><th>Reason</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="schedule-table">
+              <tr>
+                <td>09:00 AM</td><td><b>Priya Gupta</b></td><td>28</td><td>Chest pain</td><td>In-person</td>
+                <td><span class="badge badge-green">Completed</span></td>
+                <td><button class="btn btn-gray btn-sm" onclick="writePrescription('Priya Gupta')">💊 Prescription</button></td>
+              </tr>
+              <tr>
+                <td>10:00 AM</td><td><b>Rahul Singh</b></td><td>30</td><td>BP checkup</td><td>In-person</td>
+                <td><span class="badge badge-amber">Waiting</span></td>
+                <td><button class="btn btn-success btn-sm" onclick="markDone(this)">✅ Mark done</button></td>
+              </tr>
+              <tr>
+                <td>11:00 AM</td><td><b>Amit Verma</b></td><td>45</td><td>Heart test</td><td>Online</td>
+                <td><span class="badge badge-amber">Waiting</span></td>
+                <td><button class="btn btn-success btn-sm" onclick="markDone(this)">✅ Mark done</button></td>
+              </tr>
+              <tr>
+                <td>02:00 PM</td><td><b>Neha Sharma</b></td><td>35</td><td>Follow-up</td><td>In-person</td>
+                <td><span class="badge badge-blue">Upcoming</span></td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>04:00 PM</td><td><b>Vijay Kumar</b></td><td>52</td><td>ECG review</td><td>In-person</td>
+                <td><span class="badge badge-green">Completed</span></td>
+                <td><button class="btn btn-gray btn-sm" onclick="writePrescription('Vijay Kumar')">💊 Prescription</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HISTORY ── -->
+    <div id="tab-history" style="display:none;">
+      <div class="page-header">
+        <h2>Patient history</h2>
+        <p>Past consultations this month</p>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Patient</th><th>Age</th><th>Reason</th><th>Diagnosis</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>14 May '25</td><td>Suresh Patel</td><td>48</td><td>Palpitations</td><td>Arrhythmia (mild)</td><td><span class="badge badge-green">Completed</span></td></tr>
+              <tr><td>13 May '25</td><td>Rekha Joshi</td><td>33</td><td>Breathlessness</td><td>Anxiety-related</td><td><span class="badge badge-green">Completed</span></td></tr>
+              <tr><td>12 May '25</td><td>Deepak Mehra</td><td>55</td><td>Chest tightness</td><td>GERD</td><td><span class="badge badge-red">No-show</span></td></tr>
+              <tr><td>10 May '25</td><td>Ananya Roy</td><td>27</td><td>Fatigue</td><td>Low BP</td><td><span class="badge badge-green">Completed</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WRITE PRESCRIPTION ── -->
+    <div id="tab-prescriptions" style="display:none;">
+      <div class="page-header">
+        <h2>Write prescription 💊</h2>
+        <p>Issue prescription after consultation</p>
+      </div>
+      <div class="card" style="max-width:520px;">
+        <div class="form-group">
+          <label class="form-label">Patient name</label>
+          <input class="form-control" id="presc-patient" placeholder="Patient name"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Diagnosis</label>
+          <input class="form-control" id="presc-diag" placeholder="e.g. Hypertension"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Medicines</label>
+          <textarea class="form-control" id="presc-meds" rows="3" placeholder="Medicine name, dosage, frequency..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Doctor's notes</label>
+          <textarea class="form-control" id="presc-notes" rows="2" placeholder="Rest, diet, follow-up instructions..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Follow-up date</label>
+            <input type="date" class="form-control"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Doctor</label>
+            <input class="form-control" value="Dr. Rajesh Sharma" readonly/>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="savePrescription()">💾 Save prescription</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+document.getElementById('today-date').textContent = new Date().toDateString();
+
+function showTab(id, el) {
+  ['today','history','prescriptions'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === id ? 'block' : 'none';
+  });
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+let doneCount = 2, waitingCount = 2;
+
+function markDone(btn) {
+  const row    = btn.closest('tr');
+  const badge  = row.querySelector('.badge');
+  badge.className   = 'badge badge-green';
+  badge.textContent = 'Completed';
+  btn.outerHTML = `<button class="btn btn-gray btn-sm" onclick="writePrescription('Patient')">💊 Prescription</button>`;
+  doneCount++; waitingCount--;
+  document.getElementById('done-count').textContent    = doneCount;
+  document.getElementById('waiting-count').textContent = waitingCount;
+  flash('Appointment marked as completed!');
+}
+
+function writePrescription(name) {
+  showTab('prescriptions', null);
+  document.getElementById('presc-patient').value = name;
+  document.querySelectorAll('.sidebar-item').forEach((i,idx) => i.classList.toggle('active', idx === 2));
+}
+
+function savePrescription() {
+  const patient = document.getElementById('presc-patient').value.trim();
+  const diag    = document.getElementById('presc-diag').value.trim();
+  const meds    = document.getElementById('presc-meds').value.trim();
+  if (!patient || !diag || !meds) { flash('Please fill all required fields', 'error'); return; }
+  flash(`Prescription saved for ${patient}!`);
+}
+</script>
+</body>
+</html>

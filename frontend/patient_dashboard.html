@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCare — Patient Dashboard</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="flash-wrap" id="flash-wrap"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-brand" href="index.html">🏥 MediCare Hospital</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="doctors.html">Doctors</a>
+    <a class="nav-link" href="book_appointment.html">Book Appointment</a>
+    <a class="nav-link active" href="patient_dashboard.html">My Dashboard</a>
+    <a class="nav-link" href="login.html">Logout</a>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="dash-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-user">
+      <div class="avatar" style="width:42px;height:42px;font-size:14px;">RS</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;">Rahul Singh</div>
+        <div style="font-size:11px;color:var(--gray-400);">Patient · #PAT-00142</div>
+      </div>
+    </div>
+    <div class="sidebar-title">Menu</div>
+    <div class="sidebar-item active" onclick="showTab('overview', this)">📊 Dashboard</div>
+    <div class="sidebar-item" onclick="showTab('appointments', this)">📅 My appointments</div>
+    <div class="sidebar-item" onclick="window.location.href='book_appointment.html'">➕ Book new</div>
+    <div class="sidebar-item" onclick="showTab('profile', this)">👤 My profile</div>
+    <div class="sidebar-item" onclick="showTab('prescriptions', this)">💊 Prescriptions</div>
+    <div class="sidebar-title">Account</div>
+    <div class="sidebar-item" onclick="window.location.href='login.html'">🚪 Logout</div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="dash-content">
+
+    <!-- ── TAB: OVERVIEW ── -->
+    <div id="tab-overview">
+      <div class="page-header">
+        <h2>Good morning, Rahul 👋</h2>
+        <p>Here's your health summary</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-num" style="color:var(--blue);">2</div>
+          <div class="stat-label">Upcoming</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-num" style="color:var(--green);">6</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">❌</div>
+          <div class="stat-num" style="color:var(--red);">1</div>
+          <div class="stat-label">Cancelled</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💊</div>
+          <div class="stat-num" style="color:var(--amber);">3</div>
+          <div class="stat-label">Prescriptions</div>
+        </div>
+      </div>
+
+      <!-- Upcoming appointments -->
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <h3 style="font-size:15px;font-weight:600;">Upcoming appointments</h3>
+          <a href="book_appointment.html" class="btn btn-primary btn-sm">+ Book new</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Doctor</th><th>Department</th><th>Date & time</th><th>Reason</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody id="upcoming-table">
+              <tr>
+                <td><b>Dr. Rajesh Sharma</b></td>
+                <td>Cardiology</td>
+                <td>20 May 2025, 10:00 AM</td>
+                <td>Chest pain</td>
+                <td><span class="badge badge-blue">Upcoming</span></td>
+                <td><button class="btn btn-danger btn-sm" onclick="cancelAppt(this)">Cancel</button></td>
+              </tr>
+              <tr>
+                <td><b>Dr. Anita Patel</b></td>
+                <td>Neurology</td>
+                <td>25 May 2025, 02:00 PM</td>
+                <td>Headache</td>
+                <td><span class="badge badge-blue">Upcoming</span></td>
+                <td><button class="btn btn-danger btn-sm" onclick="cancelAppt(this)">Cancel</button></td>
+              </tr>
+              <tr>
+                <td><b>Dr. Manish Kumar</b></td>
+                <td>Orthopedic</td>
+                <td>10 Apr 2025, 11:00 AM</td>
+                <td>Knee pain</td>
+                <td><span class="badge badge-green">Completed</span></td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td><b>Dr. Sunita Rao</b></td>
+                <td>Dermatology</td>
+                <td>02 Mar 2025, 03:00 PM</td>
+                <td>Skin rash</td>
+                <td><span class="badge badge-red">Cancelled</span></td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: ALL APPOINTMENTS ── -->
+    <div id="tab-appointments" style="display:none;">
+      <div class="page-header">
+        <h2>All appointments</h2>
+        <p>Complete history of your visits</p>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <select class="form-control" style="max-width:160px;" onchange="filterAppts(this.value)">
+          <option value="">All status</option>
+          <option value="Upcoming">Upcoming</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+        <input type="date" class="form-control" style="max-width:180px;"/>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Doctor</th><th>Dept</th><th>Date & time</th><th>Reason</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="all-appts-table">
+              <tr><td>#001</td><td>Dr. Rajesh Sharma</td><td>Cardiology</td><td>20 May '25, 10:00 AM</td><td>Chest pain</td><td>In-person</td><td><span class="badge badge-blue">Upcoming</span></td><td><button class="btn btn-danger btn-sm" onclick="cancelAppt(this)">Cancel</button></td></tr>
+              <tr><td>#002</td><td>Dr. Anita Patel</td><td>Neurology</td><td>25 May '25, 02:00 PM</td><td>Headache</td><td>Online</td><td><span class="badge badge-blue">Upcoming</span></td><td><button class="btn btn-danger btn-sm" onclick="cancelAppt(this)">Cancel</button></td></tr>
+              <tr><td>#003</td><td>Dr. Manish Kumar</td><td>Orthopedic</td><td>10 Apr '25, 11:00 AM</td><td>Knee pain</td><td>In-person</td><td><span class="badge badge-green">Completed</span></td><td>—</td></tr>
+              <tr><td>#004</td><td>Dr. Sunita Rao</td><td>Dermatology</td><td>02 Mar '25, 03:00 PM</td><td>Skin rash</td><td>In-person</td><td><span class="badge badge-red">Cancelled</span></td><td>—</td></tr>
+              <tr><td>#005</td><td>Dr. Vikram Singh</td><td>Eye Care</td><td>15 Feb '25, 10:00 AM</td><td>Eye check</td><td>In-person</td><td><span class="badge badge-green">Completed</span></td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: PROFILE ── -->
+    <div id="tab-profile" style="display:none;">
+      <div class="page-header">
+        <h2>My profile</h2>
+        <p>Update your personal information</p>
+      </div>
+      <div class="card" style="max-width:520px;">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--gray-200);">
+          <div class="avatar" style="width:60px;height:60px;font-size:20px;">RS</div>
+          <div>
+            <div style="font-size:16px;font-weight:600;">Rahul Singh</div>
+            <div style="font-size:13px;color:var(--gray-400);">Patient ID: #PAT-00142</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">First name</label><input class="form-control" value="Rahul"/></div>
+          <div class="form-group"><label class="form-label">Last name</label><input class="form-control" value="Singh"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-control" value="rahul@email.com"/></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Phone</label><input class="form-control" value="+91 98765 43210"/></div>
+          <div class="form-group"><label class="form-label">Date of birth</label><input type="date" class="form-control" value="1995-06-15"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Gender</label><select class="form-control"><option selected>Male</option><option>Female</option><option>Other</option></select></div>
+          <div class="form-group"><label class="form-label">Blood group</label><select class="form-control"><option selected>B+</option><option>A+</option><option>O+</option><option>AB+</option></select></div>
+        </div>
+        <div class="form-group"><label class="form-label">Address</label><input class="form-control" value="42 MG Road, Ludhiana, Punjab"/></div>
+        <button class="btn btn-primary" onclick="flash('Profile updated successfully!')">💾 Save changes</button>
+      </div>
+    </div>
+
+    <!-- ── TAB: PRESCRIPTIONS ── -->
+    <div id="tab-prescriptions" style="display:none;">
+      <div class="page-header">
+        <h2>My prescriptions</h2>
+        <p>Medicines prescribed by your doctors</p>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Doctor</th><th>Diagnosis</th><th>Medicines</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>10 Apr '25</td><td>Dr. Manish Kumar</td><td>Knee ligament strain</td><td>Ibuprofen 400mg, Volini gel</td><td>Rest for 2 weeks</td></tr>
+              <tr><td>15 Feb '25</td><td>Dr. Vikram Singh</td><td>Myopia correction</td><td>Lubricant eye drops</td><td>Use glasses regularly</td></tr>
+              <tr><td>05 Jan '25</td><td>Dr. Prerna Gupta</td><td>Seasonal fever</td><td>Paracetamol 500mg, ORS</td><td>Drink lots of water</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end dash-content -->
+</div><!-- end dash-layout -->
+
+<script src="js/main.js"></script>
+<script>
+function showTab(id, el) {
+  ['overview','appointments','profile','prescriptions'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === id ? 'block' : 'none';
+  });
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function cancelAppt(btn) {
+  if (!confirm('Are you sure you want to cancel this appointment?')) return;
+  const row = btn.closest('tr');
+  row.querySelector('.badge').className = 'badge badge-red';
+  row.querySelector('.badge').textContent = 'Cancelled';
+  btn.remove();
+  flash('Appointment cancelled successfully.');
+}
+
+function filterAppts(status) {
+  const rows = document.querySelectorAll('#all-appts-table tr');
+  rows.forEach(row => {
+    const badge = row.querySelector('.badge');
+    if (!status || (badge && badge.textContent.trim() === status)) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+}
+</script>
+</body>
+</html>

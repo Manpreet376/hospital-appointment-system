@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCare — Book Appointment</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="flash-wrap" id="flash-wrap"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-brand" href="index.html">🏥 MediCare Hospital</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="doctors.html">Doctors</a>
+    <a class="nav-link" href="patient_dashboard.html">My Dashboard</a>
+    <a class="nav-link" href="login.html">Logout</a>
+  </div>
+</nav>
+
+<!-- BOOKING FORM -->
+<div style="display:flex;align-items:flex-start;justify-content:center;background:var(--gray-100);min-height:calc(100vh - 58px);padding:40px 20px;">
+  <div style="width:100%;max-width:520px;">
+    <div class="card">
+      <div style="margin-bottom:22px;">
+        <div style="font-size:36px;margin-bottom:8px;">📅</div>
+        <h2 style="font-family:var(--font-head);font-size:22px;margin-bottom:4px;">Book an appointment</h2>
+        <p style="font-size:13px;color:var(--gray-400);">Fill in the details below to confirm your booking</p>
+      </div>
+
+      <!-- Step indicator -->
+      <div style="display:flex;gap:8px;margin-bottom:24px;">
+        <div style="flex:1;height:4px;border-radius:2px;background:var(--blue);"></div>
+        <div style="flex:1;height:4px;border-radius:2px;background:var(--blue);"></div>
+        <div style="flex:1;height:4px;border-radius:2px;background:var(--gray-200);" id="step3-bar"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select department</label>
+        <select class="form-control" id="dept" onchange="loadDoctors()">
+          <option value="">Choose department...</option>
+          <option>Cardiology</option>
+          <option>Orthopedic</option>
+          <option>Neurology</option>
+          <option>Eye Care</option>
+          <option>Dental</option>
+          <option>Pediatrics</option>
+          <option>Dermatology</option>
+          <option>General</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select doctor</label>
+        <select class="form-control" id="doctor">
+          <option value="">Select department first...</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Appointment date</label>
+          <input type="date" class="form-control" id="date"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time slot</label>
+          <select class="form-control" id="time">
+            <option>09:00 AM</option>
+            <option>10:00 AM</option>
+            <option>11:00 AM</option>
+            <option>12:00 PM</option>
+            <option>02:00 PM</option>
+            <option>03:00 PM</option>
+            <option>04:00 PM</option>
+            <option>05:00 PM</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Reason / symptoms</label>
+        <textarea class="form-control" id="reason" rows="3" placeholder="Briefly describe your symptoms or reason for visit..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Appointment type</label>
+        <div style="display:flex;gap:10px;">
+          <label style="flex:1;display:flex;align-items:center;gap:8px;border:1.5px solid var(--blue);border-radius:var(--radius);padding:10px 14px;cursor:pointer;background:var(--blue-light);">
+            <input type="radio" name="type" value="in-person" checked/> 🏥 In-person
+          </label>
+          <label style="flex:1;display:flex;align-items:center;gap:8px;border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:10px 14px;cursor:pointer;">
+            <input type="radio" name="type" value="online"/> 💻 Online
+          </label>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="bookAppointment()" style="margin-top:8px;">
+        ✅ Confirm booking
+      </button>
+      <a href="doctors.html" class="btn btn-outline btn-full" style="margin-top:10px;">← Back to doctors</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+const DOCTORS_BY_DEPT = {
+  'Cardiology':   ['Dr. Rajesh Sharma', 'Dr. Suresh Mehta'],
+  'Orthopedic':   ['Dr. Manish Kumar'],
+  'Neurology':    ['Dr. Anita Patel', 'Dr. Kavya Reddy'],
+  'Eye Care':     ['Dr. Vikram Singh'],
+  'Dental':       ['Dr. Meera Iyer'],
+  'Pediatrics':   ['Dr. Arjun Nair'],
+  'Dermatology':  ['Dr. Sunita Rao'],
+  'General':      ['Dr. Prerna Gupta'],
+};
+
+function loadDoctors() {
+  const dept = document.getElementById('dept').value;
+  const sel  = document.getElementById('doctor');
+  const list = DOCTORS_BY_DEPT[dept] || [];
+  sel.innerHTML = list.length
+    ? list.map(d => `<option>${d}</option>`).join('')
+    : '<option>No doctors available</option>';
+  document.getElementById('step3-bar').style.background = dept ? 'var(--blue)' : 'var(--gray-200)';
+}
+
+function bookAppointment() {
+  const dept   = document.getElementById('dept').value;
+  const doctor = document.getElementById('doctor').value;
+  const date   = document.getElementById('date').value;
+  const time   = document.getElementById('time').value;
+  const reason = document.getElementById('reason').value.trim();
+
+  if (!dept || !doctor || !date) { flash('Please fill all required fields', 'error'); return; }
+  if (!reason) { flash('Please enter reason for visit', 'error'); return; }
+
+  flash(`Appointment booked with ${doctor} on ${date} at ${time}!`);
+  setTimeout(() => window.location.href = 'patient_dashboard.html', 1800);
+}
+
+// Pre-fill from URL params (coming from doctors page)
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const dept   = params.get('dept');
+  const doctor = params.get('doctor');
+  if (dept) {
+    document.getElementById('dept').value = dept;
+    loadDoctors();
+    if (doctor) document.getElementById('doctor').value = doctor;
+  }
+});
+</script>
+</body>
+</html>

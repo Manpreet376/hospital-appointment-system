@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}MediCare — Book Appointment{% endblock %}
+
+{% block content %}
+<div style="display:flex;align-items:flex-start;justify-content:center;
+            background:var(--gray-100);min-height:calc(100vh - 58px);padding:40px 20px;">
+  <div style="width:100%;max-width:520px;">
+    <div class="card">
+      <div style="margin-bottom:22px;">
+        <div style="font-size:36px;margin-bottom:8px;">📅</div>
+        <h2 style="font-family:var(--font-head);font-size:22px;margin-bottom:4px;">
+          Book an appointment
+        </h2>
+        <p style="font-size:13px;color:var(--gray-400);">Fill in the details below</p>
+      </div>
+
+      <form method="POST" action="{{ url_for('book_appointment') }}">
+
+        <div class="form-group">
+          <label class="form-label">Select department</label>
+          <select class="form-control" id="dept-select" onchange="filterDoctors()">
+            <option value="">Choose department...</option>
+            {% for dept in departments %}
+            <option value="{{ dept.id }}">{{ dept.emoji }} {{ dept.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Select doctor</label>
+          <select class="form-control" name="doctor_id" id="doctor-select">
+            <option value="">Select department first...</option>
+            {% for doc in doctors %}
+            <option value="{{ doc.id }}"
+                    data-dept="{{ doc.department_id }}"
+                    {% if selected_doctor == doc.id|string %}selected{% endif %}>
+              {{ doc.name }} — {{ doc.specialization }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Appointment date</label>
+            <input type="date" name="date" class="form-control" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Time slot</label>
+            <select name="time_slot" class="form-control">
+              <option>09:00 AM</option>
+              <option>10:00 AM</option>
+              <option>11:00 AM</option>
+              <option>12:00 PM</option>
+              <option>02:00 PM</option>
+              <option>03:00 PM</option>
+              <option>04:00 PM</option>
+              <option>05:00 PM</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Reason / symptoms</label>
+          <textarea name="reason" class="form-control" rows="3"
+                    placeholder="Briefly describe your symptoms..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Appointment type</label>
+          <div style="display:flex;gap:10px;">
+            <label style="flex:1;display:flex;align-items:center;gap:8px;
+                          border:1.5px solid var(--blue);border-radius:var(--radius);
+                          padding:10px 14px;cursor:pointer;background:var(--blue-light);">
+              <input type="radio" name="appt_type" value="in-person" checked/> 🏥 In-person
+            </label>
+            <label style="flex:1;display:flex;align-items:center;gap:8px;
+                          border:1.5px solid var(--gray-200);border-radius:var(--radius);
+                          padding:10px 14px;cursor:pointer;">
+              <input type="radio" name="appt_type" value="online"/> 💻 Online
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px;">
+          ✅ Confirm booking
+        </button>
+        <a href="{{ url_for('doctors') }}" class="btn btn-outline btn-full" style="margin-top:10px;">
+          ← Back to doctors
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Doctor filter by department
+function filterDoctors() {
+  const deptId = document.getElementById('dept-select').value;
+  const options = document.querySelectorAll('#doctor-select option');
+  options.forEach(opt => {
+    if (!opt.value) return;
+    opt.style.display = (!deptId || opt.dataset.dept === deptId) ? '' : 'none';
+  });
+  document.getElementById('doctor-select').value = '';
+}
+
+// Set min date to today
+document.querySelector('input[type="date"]').min = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}

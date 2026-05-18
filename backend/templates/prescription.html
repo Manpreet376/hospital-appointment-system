@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}MediCare — Write Prescription{% endblock %}
+
+{% block content %}
+<div style="display:flex;justify-content:center;padding:40px 20px;background:var(--gray-100);min-height:calc(100vh - 58px);">
+  <div style="width:100%;max-width:520px;">
+    <div class="card">
+      <div style="margin-bottom:20px;">
+        <div style="font-size:36px;margin-bottom:8px;">💊</div>
+        <h2 style="font-family:var(--font-head);font-size:22px;">Write prescription</h2>
+        <p style="font-size:13px;color:var(--gray-400);">
+          Patient: <b>{{ appt.patient.full_name() }}</b> &nbsp;·&nbsp;
+          Date: {{ appt.date }}
+        </p>
+      </div>
+
+      <form method="POST">
+        <div class="form-group">
+          <label class="form-label">Diagnosis</label>
+          <input class="form-control" name="diagnosis" placeholder="e.g. Hypertension" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Medicines</label>
+          <textarea class="form-control" name="medicines" rows="3"
+                    placeholder="Medicine name, dosage, frequency..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Doctor's notes</label>
+          <textarea class="form-control" name="notes" rows="2"
+                    placeholder="Rest, diet, follow-up instructions..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Follow-up date</label>
+          <input type="date" class="form-control" name="followup_date"/>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button type="submit" class="btn btn-primary">💾 Save prescription</button>
+          <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-outline">← Back</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

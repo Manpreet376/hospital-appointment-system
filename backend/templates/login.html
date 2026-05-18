@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}MediCare — Login{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-box">
+    <div class="card">
+      <div class="auth-icon">🔐</div>
+      <h2 class="auth-title">Welcome back</h2>
+      <p class="auth-sub">Login to your account</p>
+
+      <!-- Role Tabs -->
+      <div class="role-tabs">
+        <button class="role-tab active" onclick="setRole('patient', this)">🧑 Patient</button>
+        <button class="role-tab" onclick="setRole('doctor', this)">👨‍⚕️ Doctor</button>
+        <button class="role-tab" onclick="setRole('admin', this)">🛡️ Admin</button>
+      </div>
+
+      <form method="POST" action="{{ url_for('login') }}">
+        <input type="hidden" name="role" id="role-input" value="patient"/>
+
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input type="email" name="email" class="form-control" placeholder="you@email.com" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" placeholder="••••••••" required/>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">Login →</button>
+      </form>
+
+      <div class="auth-switch">
+        Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
+      </div>
+
+      <!-- Demo credentials -->
+      <div style="margin-top:16px;padding:12px;background:var(--gray-50);border-radius:var(--radius);font-size:12px;color:var(--gray-600);">
+        <b>Demo login:</b><br>
+        Patient → rahul@email.com / patient123<br>
+        Doctor → rajesh@medicare.com / doctor123<br>
+        Admin → admin@medicare.com / admin123
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function setRole(role, btn) {
+  document.getElementById('role-input').value = role;
+  document.querySelectorAll('.role-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+{% endblock %}

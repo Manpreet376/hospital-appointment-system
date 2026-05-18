@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% block title %}MediCare — Admin Panel{% endblock %}
+
+{% block content %}
+<div class="dash-layout">
+
+  <!-- SIDEBAR DARK -->
+  <aside class="sidebar sidebar-dark">
+    <div class="sidebar-user">
+      <div class="avatar" style="width:42px;height:42px;font-size:14px;background:rgba(255,255,255,0.1);color:#fff;">SA</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#fff;">Super Admin</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);">Administrator</div>
+      </div>
+    </div>
+    <div class="sidebar-title">Navigation</div>
+    <div class="sidebar-item active" onclick="showTab('overview', this)">📊 Dashboard</div>
+    <div class="sidebar-item" onclick="showTab('doctors', this)">👨‍⚕️ Manage doctors</div>
+    <div class="sidebar-item" onclick="showTab('appointments', this)">📅 All appointments</div>
+    <div class="sidebar-item" onclick="showTab('patients', this)">🧑 Patients</div>
+    <div class="sidebar-item" onclick="showTab('departments', this)">🏨 Departments</div>
+    <div class="sidebar-title">Account</div>
+    <div class="sidebar-item" onclick="window.location.href='{{ url_for('logout') }}'">🚪 Logout</div>
+  </aside>
+
+  <div class="dash-content">
+
+    <!-- TAB: OVERVIEW -->
+    <div id="tab-overview">
+      <div class="page-header">
+        <h2>Admin dashboard 🛡️</h2>
+        <p>Hospital management overview</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👨‍⚕️</div>
+          <div class="stat-num">{{ total_doctors }}</div>
+          <div class="stat-label">Total doctors</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🧑</div>
+          <div class="stat-num">{{ total_patients }}</div>
+          <div class="stat-label">Registered patients</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-num" style="color:var(--blue);">{{ today_appts }}</div>
+          <div class="stat-label">Today's appointments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-num" style="color:var(--green);">{{ completed_today }}</div>
+          <div class="stat-label">Completed today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-num">{{ total_appts }}</div>
+          <div class="stat-label">Total appointments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏨</div>
+          <div class="stat-num">{{ departments|length }}</div>
+          <div class="stat-label">Departments</div>
+        </div>
+      </div>
+
+      <!-- Recent appointments -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <h3 style="font-size:15px;font-weight:600;">Recent appointments</h3>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Department</th><th>Date</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              {% for appt in all_appointments %}
+              <tr>
+                <td>#{{ appt.id }}</td>
+                <td>{{ appt.patient.full_name() }}</td>
+                <td>{{ appt.doctor.name }}</td>
+                <td>{{ appt.doctor.department.name }}</td>
+                <td>{{ appt.date }}</td>
+                <td>
+                  <span class="badge
+                    {% if appt.status == 'upcoming' %}badge-blue
+                    {% elif appt.status == 'completed' %}badge-green
+                    {% else %}badge-red{% endif %}">
+                    {{ appt.status | capitalize }}
+                  </span>
+                </td>
+                <td>
+                  {% if appt.status == 'upcoming' %}
+                  <a href="{{ url_for('delete_appointment', appt_id=appt.id) }}"
+                     class="btn btn-danger btn-sm"
+                     onclick="return confirm('Delete this appointment?')">Delete</a>
+                  {% else %}—{% endif %}
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="7" style="text-align:center;color:var(--gray-400);padding:20px;">
+                  No appointments yet.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: MANAGE DOCTORS -->
+    <div id="tab-doctors" style="display:none;">
+      <div class="page-header">
+        <h2>Manage doctors</h2>
+        <p>Add, edit or remove doctors</p>
+      </div>
+
+      <!-- Add doctor form -->
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">➕ Add new doctor</h3>
+        <form method="POST" action="{{ url_for('add_doctor') }}">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Full name</label>
+              <input class="form-control" name="name" placeholder="Dr. Full Name" required/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Specialization</label>
+              <input class="form-control" name="specialization" placeholder="Cardiologist" required/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Department</label>
+              <select class="form-control" name="department_id" required>
+                {% for dept in departments %}
+                <option value="{{ dept.id }}">{{ dept.emoji }} {{ dept.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" name="email" placeholder="doctor@hospital.com" required/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Experience</label>
+              <input class="form-control" name="experience" placeholder="e.g. 5 years"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Consultation fee (₹)</label>
+              <input type="number" class="form-control" name="fee" placeholder="500" value="500"/>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">💾 Save doctor</button>
+        </form>
+      </div>
+
+      <!-- Doctors table -->
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Name</th><th>Specialization</th><th>Department</th><th>Fee</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              {% for doc in all_doctors %}
+              <tr>
+                <td>{{ doc.id }}</td>
+                <td><b>{{ doc.name }}</b></td>
+                <td>{{ doc.specialization }}</td>
+                <td>{{ doc.department.name }}</td>
+                <td>₹{{ doc.fee }}</td>
+                <td>
+                  <span class="badge {{ 'badge-green' if doc.status == 'available' else 'badge-amber' }}">
+                    {{ doc.status | capitalize }}
+                  </span>
+                </td>
+                <td>
+                  <a href="{{ url_for('delete_doctor', doctor_id=doc.id) }}"
+                     class="btn btn-danger btn-sm"
+                     onclick="return confirm('Remove this doctor?')">Remove</a>
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="7" style="text-align:center;color:var(--gray-400);padding:20px;">
+                  No doctors found.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: ALL APPOINTMENTS -->
+    <div id="tab-appointments" style="display:none;">
+      <div class="page-header">
+        <h2>All appointments</h2>
+        <p>Complete appointment records</p>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Type</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              {% for appt in all_appointments %}
+              <tr>
+                <td>#{{ appt.id }}</td>
+                <td>{{ appt.patient.full_name() }}</td>
+                <td>{{ appt.doctor.name }}</td>
+                <td>{{ appt.date }}</td>
+                <td>{{ appt.time_slot }}</td>
+                <td>{{ appt.appt_type }}</td>
+                <td>
+                  <span class="badge
+                    {% if appt.status == 'upcoming' %}badge-blue
+                    {% elif appt.status == 'completed' %}badge-green
+                    {% else %}badge-red{% endif %}">
+                    {{ appt.status | capitalize }}
+                  </span>
+                </td>
+                <td>
+                  {% if appt.status == 'upcoming' %}
+                  <a href="{{ url_for('delete_appointment', appt_id=appt.id) }}"
+                     class="btn btn-danger btn-sm"
+                     onclick="return confirm('Delete?')">Delete</a>
+                  {% else %}—{% endif %}
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="8" style="text-align:center;color:var(--gray-400);padding:20px;">
+                  No appointments found.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: PATIENTS -->
+    <div id="tab-patients" style="display:none;">
+      <div class="page-header">
+        <h2>Registered patients</h2>
+        <p>All patient records</p>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Gender</th><th>Blood group</th><th>Joined</th></tr>
+            </thead>
+            <tbody>
+              {% for p in all_patients %}
+              <tr>
+                <td>#PAT-{{ p.id }}</td>
+                <td><b>{{ p.full_name() }}</b></td>
+                <td>{{ p.email }}</td>
+                <td>{{ p.phone or '—' }}</td>
+                <td>{{ p.gender or '—' }}</td>
+                <td>{{ p.blood_group or '—' }}</td>
+                <td>{{ p.created_at.strftime('%b %Y') }}</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="7" style="text-align:center;color:var(--gray-400);padding:20px;">
+                  No patients registered yet.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: DEPARTMENTS -->
+    <div id="tab-departments" style="display:none;">
+      <div class="page-header">
+        <h2>Departments</h2>
+        <p>Hospital department overview</p>
+      </div>
+      <div class="dept-grid" style="max-width:800px;">
+        {% for dept in departments %}
+        <div class="dept-card">
+          <div class="dept-emoji">{{ dept.emoji }}</div>
+          <div class="dept-name">{{ dept.name }}</div>
+          <div class="dept-count">{{ dept.doctors|length }} doctors</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showTab(id, el) {
+  ['overview','doctors','appointments','patients','departments'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === id ? 'block' : 'none';
+  });
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+</script>
+{% endblock %}

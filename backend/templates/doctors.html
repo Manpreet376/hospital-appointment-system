@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}MediCare — Find a Doctor{% endblock %}
+
+{% block content %}
+<div style="max-width:900px;margin:0 auto;padding:32px 24px;">
+  <div class="page-header">
+    <h2>Find a doctor</h2>
+    <p>Browse and book appointments with our specialists</p>
+  </div>
+
+  <!-- Search & Filter -->
+  <form method="GET" action="{{ url_for('doctors') }}">
+    <div class="search-bar">
+      <select name="dept" class="form-control" style="max-width:210px;" onchange="this.form.submit()">
+        <option value="">All departments</option>
+        {% for dept in departments %}
+        <option value="{{ dept.name }}" {% if selected_dept == dept.name %}selected{% endif %}>
+          {{ dept.emoji }} {{ dept.name }}
+        </option>
+        {% endfor %}
+      </select>
+      <input type="text" name="search" class="form-control"
+             placeholder="🔍  Search by doctor name..."
+             value="{{ search }}"
+             onchange="this.form.submit()"/>
+      <button type="submit" class="btn btn-primary btn-sm">Search</button>
+    </div>
+  </form>
+
+  <!-- Result count -->
+  <p style="font-size:13px;color:var(--gray-400);margin-bottom:14px;">
+    {{ doctors|length }} doctor(s) found
+  </p>
+
+  <!-- Doctor cards -->
+  {% if doctors %}
+    {% for doc in doctors %}
+    <div class="doctor-card">
+      <div class="avatar" style="width:50px;height:50px;font-size:15px;">
+        {{ doc.initials() }}
+      </div>
+      <div style="flex:1;">
+        <div style="font-weight:600;font-size:15px;margin-bottom:2px;">{{ doc.name }}</div>
+        <div style="font-size:12px;color:var(--gray-400);margin-bottom:4px;">
+          {{ doc.specialization }} &nbsp;·&nbsp;
+          {{ doc.department.name }} &nbsp;·&nbsp;
+          {{ doc.experience }} experience
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="badge {{ 'badge-green' if doc.status == 'available' else 'badge-amber' }}">
+            {{ '✅ Available' if doc.status == 'available' else '⏳ Busy' }}
+          </span>
+          <span style="font-size:11px;color:var(--gray-400);">🕐 {{ doc.availability }}</span>
+          <span style="font-size:11px;color:var(--gray-400);">💰 ₹{{ doc.fee }} consultation</span>
+        </div>
+      </div>
+      {% if doc.status == 'available' %}
+        <a href="{{ url_for('book_appointment', doctor_id=doc.id) }}"
+           class="btn btn-primary btn-sm">📅 Book</a>
+      {% else %}
+        <button class="btn btn-gray btn-sm" disabled>Slot Full</button>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="card" style="text-align:center;padding:40px;color:var(--gray-400);">
+      😕 No doctors found. Try a different filter.
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
