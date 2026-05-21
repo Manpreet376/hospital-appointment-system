@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}MediCare — Give Feedback{% endblock %}
+
+{% block content %}
+<div style="display:flex;align-items:center;justify-content:center;
+            background:var(--gray-100);min-height:calc(100vh - 58px);padding:40px 20px;">
+  <div style="width:100%;max-width:500px;">
+    <div class="card">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="font-size:40px;margin-bottom:8px;">⭐</div>
+        <h2 style="font-family:var(--font-head);font-size:22px;">Rate your experience</h2>
+        <p style="font-size:13px;color:var(--gray-400);">
+          Doctor: <b>{{ appt.doctor.name }}</b> &nbsp;·&nbsp; Date: {{ appt.date }}
+        </p>
+      </div>
+
+      <form method="POST">
+        <!-- Star Rating -->
+        <div class="form-group" style="text-align:center;">
+          <label class="form-label">Your rating</label>
+          <div id="stars" style="font-size:40px;cursor:pointer;margin:10px 0;">
+            <span onclick="setRating(1)" class="star">⭐</span>
+            <span onclick="setRating(2)" class="star">⭐</span>
+            <span onclick="setRating(3)" class="star">⭐</span>
+            <span onclick="setRating(4)" class="star">⭐</span>
+            <span onclick="setRating(5)" class="star">⭐</span>
+          </div>
+          <input type="hidden" name="rating" id="rating-input" value="5" required/>
+          <div id="rating-text" style="font-size:13px;color:var(--gray-400);">5 — Excellent</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Your comment</label>
+          <textarea name="comment" class="form-control" rows="4"
+                    placeholder="Share your experience with this doctor..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">
+          ⭐ Submit feedback
+        </button>
+        <a href="{{ url_for('patient_dashboard') }}"
+           class="btn btn-outline btn-full" style="margin-top:10px;">
+          ← Back
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const labels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+function setRating(val) {
+  document.getElementById('rating-input').value = val;
+  document.getElementById('rating-text').textContent = val + ' — ' + labels[val];
+  const stars = document.querySelectorAll('.star');
+  stars.forEach((s, i) => {
+    s.style.opacity = i < val ? '1' : '0.3';
+  });
+}
+
+setRating(5);
+</script>
+{% endblock %}

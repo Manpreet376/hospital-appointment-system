@@ -10,6 +10,14 @@
       <p class="auth-sub">Login to your account</p>
 
       <!-- Role Tabs -->
+       <div style="text-align:center;margin:10px 0;color:var(--gray-400);font-size:12px;">— OR —</div>
+
+<div id="mobile-login" style="display:none;">
+  <div class="form-group">
+    <label class="form-label">Mobile number</label>
+    <input type="text" name="mobile" class="form-control" placeholder="+91 98765 43210"/>
+  </div>
+</div>
       <div class="role-tabs">
         <button class="role-tab active" onclick="setRole('patient', this)">🧑 Patient</button>
         <button class="role-tab" onclick="setRole('doctor', this)">👨‍⚕️ Doctor</button>

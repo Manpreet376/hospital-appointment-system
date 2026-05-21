@@ -8,10 +8,8 @@
     <div class="card">
       <div style="margin-bottom:22px;">
         <div style="font-size:36px;margin-bottom:8px;">📅</div>
-        <h2 style="font-family:var(--font-head);font-size:22px;margin-bottom:4px;">
-          Book an appointment
-        </h2>
-        <p style="font-size:13px;color:var(--gray-400);">Fill in the details below</p>
+        <h2 style="font-family:var(--font-head);font-size:22px;margin-bottom:4px;">Book an appointment</h2>
+        <p style="font-size:13px;color:var(--gray-400);">Fill in the details below to confirm your booking</p>
       </div>
 
       <form method="POST" action="{{ url_for('book_appointment') }}">
@@ -34,7 +32,7 @@
             <option value="{{ doc.id }}"
                     data-dept="{{ doc.department_id }}"
                     {% if selected_doctor == doc.id|string %}selected{% endif %}>
-              {{ doc.name }} — {{ doc.specialization }}
+              {{ doc.name }} — {{ doc.specialization }} — ₹{{ doc.fee }}
             </option>
             {% endfor %}
           </select>
@@ -61,6 +59,17 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">Patient mobile number 📱</label>
+          <input type="text" name="phone" class="form-control"
+                 placeholder="+91 98765 43210"
+                 value="{{ current_user.phone or '' }}"
+                 required/>
+          <div style="font-size:11px;color:var(--gray-400);margin-top:4px;">
+            ✅ Appointment confirmation SMS will be sent to this number
+          </div>
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Reason / symptoms</label>
           <textarea name="reason" class="form-control" rows="3"
                     placeholder="Briefly describe your symptoms..." required></textarea>
@@ -83,11 +92,12 @@
         </div>
 
         <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px;">
-          ✅ Confirm booking
+          ✅ Confirm booking & Send SMS
         </button>
         <a href="{{ url_for('doctors') }}" class="btn btn-outline btn-full" style="margin-top:10px;">
           ← Back to doctors
         </a>
+
       </form>
     </div>
   </div>
@@ -96,9 +106,8 @@
 
 {% block scripts %}
 <script>
-// Doctor filter by department
 function filterDoctors() {
-  const deptId = document.getElementById('dept-select').value;
+  const deptId  = document.getElementById('dept-select').value;
   const options = document.querySelectorAll('#doctor-select option');
   options.forEach(opt => {
     if (!opt.value) return;
@@ -107,7 +116,6 @@ function filterDoctors() {
   document.getElementById('doctor-select').value = '';
 }
 
-// Set min date to today
 document.querySelector('input[type="date"]').min = new Date().toISOString().split('T')[0];
 </script>
 {% endblock %}

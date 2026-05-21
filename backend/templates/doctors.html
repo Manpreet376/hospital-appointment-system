@@ -3,36 +3,64 @@
 
 {% block content %}
 <div style="max-width:900px;margin:0 auto;padding:32px 24px;">
+
   <div class="page-header">
     <h2>Find a doctor</h2>
-    <p>Browse and book appointments with our specialists</p>
+    <p>Search nearby hospitals first, then find your doctor</p>
   </div>
 
-  <!-- Search & Filter -->
-  <form method="GET" action="{{ url_for('doctors') }}">
-    <div class="search-bar">
-      <select name="dept" class="form-control" style="max-width:210px;" onchange="this.form.submit()">
-        <option value="">All departments</option>
-        {% for dept in departments %}
-        <option value="{{ dept.name }}" {% if selected_dept == dept.name %}selected{% endif %}>
-          {{ dept.emoji }} {{ dept.name }}
-        </option>
-        {% endfor %}
-      </select>
-      <input type="text" name="search" class="form-control"
-             placeholder="🔍  Search by doctor name..."
-             value="{{ search }}"
-             onchange="this.form.submit()"/>
-      <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  <!-- STEP 1: LOCATION SEARCH -->
+  <div style="background:linear-gradient(135deg,#1e40af,#1a56db);padding:24px;border-radius:16px;color:#fff;margin-bottom:20px;">
+    <h3 style="font-size:16px;font-weight:600;margin-bottom:4px;">📍 Step 1 — Find hospitals near you</h3>
+    <p style="font-size:12px;opacity:0.85;margin-bottom:14px;">Enter your city to see nearby hospitals</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <input type="text" id="city-input" placeholder="e.g. Chandigarh, Ludhiana, Delhi..."
+             style="flex:1;min-width:200px;padding:10px 14px;border-radius:8px;border:none;font-size:14px;outline:none;"/>
+      <button onclick="findHospitals()"
+              style="padding:10px 20px;background:#fff;color:#1a56db;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;">
+        🔍 Search
+      </button>
+      <button onclick="useMyLocation()"
+              style="padding:10px 20px;background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:8px;cursor:pointer;font-size:14px;">
+        📍 Use my location
+      </button>
     </div>
-  </form>
+  </div>
 
-  <!-- Result count -->
+  <!-- HOSPITALS LIST -->
+  <div id="hospitals-section" style="display:none;margin-bottom:24px;">
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:12px;" id="hospitals-title"></h3>
+    <div id="hospitals-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:14px;"></div>
+    <div id="selected-hospital-msg" style="display:none;background:#DCFCE7;border:1px solid #bbf7d0;border-radius:10px;padding:12px 16px;font-size:13px;color:#15803d;margin-bottom:16px;"></div>
+  </div>
+
+  <!-- STEP 2: DOCTOR SEARCH -->
+  <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:16px;padding:20px;margin-bottom:20px;">
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:12px;">👨‍⚕️ Step 2 — Find a doctor</h3>
+    <form method="GET" action="{{ url_for('doctors') }}">
+      <div class="search-bar">
+        <select name="dept" class="form-control" style="max-width:210px;" onchange="this.form.submit()">
+          <option value="">All departments</option>
+          {% for dept in departments %}
+          <option value="{{ dept.name }}" {% if selected_dept == dept.name %}selected{% endif %}>
+            {{ dept.emoji }} {{ dept.name }}
+          </option>
+          {% endfor %}
+        </select>
+        <input type="text" name="search" class="form-control"
+               placeholder="🔍  Search by doctor name..."
+               value="{{ search }}"/>
+        <button type="submit" class="btn btn-primary btn-sm">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- RESULT COUNT -->
   <p style="font-size:13px;color:var(--gray-400);margin-bottom:14px;">
     {{ doctors|length }} doctor(s) found
   </p>
 
-  <!-- Doctor cards -->
+  <!-- DOCTOR CARDS -->
   {% if doctors %}
     {% for doc in doctors %}
     <div class="doctor-card">
@@ -69,4 +97,121 @@
   {% endif %}
 
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const HOSPITALS_DB = {
+  'chandigarh': [
+    { name: 'PGIMER', full: 'Post Graduate Institute of Medical Education & Research', type: 'Government', rating: '⭐⭐⭐⭐⭐' },
+    { name: 'Fortis Hospital', full: 'Fortis Hospital Mohali', type: 'Private', rating: '⭐⭐⭐⭐' },
+    { name: 'Max Hospital', full: 'Max Super Speciality Hospital', type: 'Private', rating: '⭐⭐⭐⭐' },
+    { name: 'GMCH', full: 'Government Medical College & Hospital', type: 'Government', rating: '⭐⭐⭐⭐' },
+    { name: 'Ivy Hospital', full: 'Ivy Hospital Mohali', type: 'Private', rating: '⭐⭐⭐⭐' },
+  ],
+  'ludhiana': [
+    { name: 'DMC', full: 'Dayanand Medical College & Hospital', type: 'Private', rating: '⭐⭐⭐⭐⭐' },
+    { name: 'CMC Ludhiana', full: 'Christian Medical College', type: 'Private', rating: '⭐⭐⭐⭐⭐' },
+    { name: 'Fortis Ludhiana', full: 'Fortis Hospital Ludhiana', type: 'Private', rating: '⭐⭐⭐⭐' },
+    { name: 'SPS Hospital', full: 'SPS Hospital Ludhiana', type: 'Private', rating: '⭐⭐⭐' },
+  ],
+  'delhi': [
+    { name: 'AIIMS', full: 'All India Institute of Medical Sciences', type: 'Government', rating: '⭐⭐⭐⭐⭐' },
+    { name: 'Apollo Delhi', full: 'Indraprastha Apollo Hospital', type: 'Private', rating: '⭐⭐⭐⭐⭐' },
+    { name: 'Max Saket', full: 'Max Super Speciality Hospital Saket', type: 'Private', rating: '⭐⭐⭐⭐' },
+    { name: 'Safdarjung', full: 'Safdarjung Hospital', type: 'Government', rating: '⭐⭐⭐⭐' },
+  ],
+  'mumbai': [
+    { name: 'KEM Hospital', full: 'King Edward Memorial Hospital', type: 'Government', rating: '⭐⭐⭐⭐⭐' },
+    { name: 'Lilavati', full: 'Lilavati Hospital & Research Centre', type: 'Private', rating: '⭐⭐⭐⭐⭐' },
+    { name: 'Kokilaben', full: 'Kokilaben Dhirubhai Ambani Hospital', type: 'Private', rating: '⭐⭐⭐⭐⭐' },
+    { name: 'Breach Candy', full: 'Breach Candy Hospital', type: 'Private', rating: '⭐⭐⭐⭐' },
+  ],
+  'amritsar': [
+    { name: 'DMCH Amritsar', full: 'Dayanand Medical College Amritsar', type: 'Private', rating: '⭐⭐⭐⭐' },
+    { name: 'Guru Nanak Dev', full: 'Guru Nanak Dev Hospital', type: 'Government', rating: '⭐⭐⭐⭐' },
+    { name: 'Fortis Amritsar', full: 'Fortis Hospital Amritsar', type: 'Private', rating: '⭐⭐⭐⭐' },
+  ],
+  'jalandhar': [
+    { name: 'Civil Hospital', full: 'Civil Hospital Jalandhar', type: 'Government', rating: '⭐⭐⭐' },
+    { name: 'Ivy Hospital', full: 'Ivy Hospital Jalandhar', type: 'Private', rating: '⭐⭐⭐⭐' },
+    { name: 'Nobel Hospital', full: 'Nobel Hospital Jalandhar', type: 'Private', rating: '⭐⭐⭐' },
+  ],
+  'patiala': [
+    { name: 'Rajindra Hospital', full: 'Rajindra Hospital Patiala', type: 'Government', rating: '⭐⭐⭐⭐' },
+    { name: 'Columbia Asia', full: 'Columbia Asia Hospital Patiala', type: 'Private', rating: '⭐⭐⭐⭐' },
+  ],
+  'mohali': [
+    { name: 'Fortis Mohali', full: 'Fortis Hospital Mohali', type: 'Private', rating: '⭐⭐⭐⭐⭐' },
+    { name: 'Max Mohali', full: 'Max Super Speciality Hospital Mohali', type: 'Private', rating: '⭐⭐⭐⭐' },
+    { name: 'Ivy Mohali', full: 'Ivy Hospital Mohali', type: 'Private', rating: '⭐⭐⭐⭐' },
+  ],
+};
+
+function findHospitals() {
+  const city = document.getElementById('city-input').value.trim().toLowerCase();
+  if (!city) { alert('Please enter a city name!'); return; }
+
+  const hospitals = HOSPITALS_DB[city];
+  const section   = document.getElementById('hospitals-section');
+  const list      = document.getElementById('hospitals-list');
+  const title     = document.getElementById('hospitals-title');
+
+  section.style.display = 'block';
+
+  if (!hospitals) {
+    title.textContent = 'No hospitals found for "' + city + '"';
+    list.innerHTML = '<div class="card" style="text-align:center;padding:20px;color:var(--gray-400);">😕 Try: Chandigarh, Ludhiana, Delhi, Mumbai, Amritsar, Jalandhar, Patiala, Mohali</div>';
+    return;
+  }
+
+  title.textContent = '🏥 Hospitals near ' + city.charAt(0).toUpperCase() + city.slice(1);
+  list.innerHTML = hospitals.map(h => `
+    <div class="card" style="cursor:pointer;border:2px solid transparent;transition:all .15s;"
+         onclick="selectHospital('${h.name}')"
+         onmouseover="this.style.borderColor='#1a56db'"
+         onmouseout="this.style.borderColor='transparent'">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div style="font-size:28px;">🏥</div>
+        <div>
+          <div style="font-weight:600;font-size:14px;">${h.name}</div>
+          <div style="font-size:11px;color:#94A3B8;">${h.full}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <span class="badge ${h.type === 'Government' ? 'badge-green' : 'badge-blue'}">${h.type}</span>
+        <span style="font-size:12px;">${h.rating}</span>
+      </div>
+      <button style="width:100%;padding:7px;background:#1a56db;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;">
+        Select this hospital →
+      </button>
+    </div>
+  `).join('');
+
+  section.scrollIntoView({ behavior: 'smooth' });
+}
+
+function selectHospital(name) {
+  const msg = document.getElementById('selected-hospital-msg');
+  msg.style.display = 'block';
+  msg.innerHTML = '✅ <b>' + name + '</b> selected! Now find your doctor below 👇';
+  document.querySelector('.page-header').scrollIntoView({ behavior: 'smooth' });
+}
+
+function useMyLocation() {
+  if (!navigator.geolocation) { alert('Location not supported!'); return; }
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      const url = 'https://www.google.com/maps/search/hospitals/@' + pos.coords.latitude + ',' + pos.coords.longitude + ',14z';
+      window.open(url, '_blank');
+    },
+    function() { alert('Location access denied! Please allow location.'); }
+  );
+}
+
+// Enter key se bhi search ho
+document.getElementById('city-input').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') findHospitals();
+});
+</script>
 {% endblock %}
